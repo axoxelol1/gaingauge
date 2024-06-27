@@ -16,9 +16,9 @@ type Env struct {
 }
 
 type User struct {
-	id         int64
-	First_name string `json:"first_name"`
-	Last_name  string `json:"last_name"`
+	Id        int64  `json:"id"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 }
 
 func main() {
@@ -48,7 +48,7 @@ func (e *Env) getUsers(c *gin.Context) {
 	var users []User
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.id, &user.First_name, &user.Last_name); err != nil {
+		if err := rows.Scan(&user.Id, &user.FirstName, &user.LastName); err != nil {
 			c.AbortWithStatus(500)
 		}
 		users = append(users, user)
