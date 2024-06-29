@@ -34,9 +34,17 @@ func main() {
 	env := &Env{db: conn}
 
 	router := gin.Default()
+	router.Use(checkAuth)
 	router.GET("/users", env.getUsers)
 
 	router.Run("localhost:8080")
+}
+
+func checkAuth(c *gin.Context) {
+	token := c.Request.Header["Authorization"]
+	if len(token) == 0 || token[0] != os.Getenv("AUTH") {
+		c.AbortWithStatus(401)
+	}
 }
 
 func (e *Env) getUsers(c *gin.Context) {
@@ -54,7 +62,6 @@ func (e *Env) getUsers(c *gin.Context) {
 		users = append(users, user)
 	}
 
-	fmt.Println(len(users))
 	c.JSON(http.StatusOK, users)
 }
 
