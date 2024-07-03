@@ -1,27 +1,32 @@
-import { Component, createResource, Match, Show, Switch } from "solid-js";
+import { Component, createResource, Match, Switch } from "solid-js";
+import { User } from "../utils/types";
 
-const fetchUsers = async () =>
-    (await fetch('/api/users')).json();
+const fetchUsers: () => Promise<User[]> = async () => {
+    // TODO: api error handling
+    const res = await fetch('/api/users', { headers: { "Authorization": localStorage.getItem("secret") } });
+    if (!res.ok) {
+        throw new Error(res.statusText)
+    }
+    return res.json() as Promise<User[]>
+}
 
 
-const Dashboard: Component = (props) => {
+const Dashboard: Component = () => {
     const [users] = createResource(fetchUsers)
+    console.log(users)
     return (
         <>
-            <h1> Dashboard </h1>
-            <div>
-                <Show when={users.loading}>
-                    <p>Loading...</p>
-                </Show>
-                <Switch>
-                    <Match when={users.error}>
-                        <span>Error {users.loading}</span>
-                    </Match>
-                    <Match when={users()}>
-                        <div>{JSON.stringify(users())}</div>
-                    </Match>
-                </Switch>
-            </div>
+            <Switch>
+                <Match when={users.error}>
+                    {users.error}
+                </Match>
+                <Match when={users.loading}>
+                    Loading...
+                </Match>
+                <Match when={users()}>
+                    <div>{JSON.stringify(users())}</div>
+                </Match>
+            </Switch>
         </>
     )
 }
