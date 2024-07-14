@@ -1,7 +1,15 @@
 CREATE TABLE users (
     id serial PRIMARY KEY,
+    username text NOT NULL UNIQUE,
     first_name text NOT NULL,
-    last_name text NOT NULL
+    last_name text NOT NULL,
+    password text NOT NULL
+);
+
+CREATE TABLE loginsessions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id integer REFERENCES users(id) NOT NULL,
+    expires_at timestamp NOT NULL
 );
 
 CREATE TABLE exercises (
@@ -20,6 +28,12 @@ CREATE TABLE lifts (
     workout integer REFERENCES workouts(id) NOT NULL,
     exercise text REFERENCES exercises(name) NOT NULL,
     comment text
+);
+
+CREATE  TABLE sets (
+    id serial PRIMARY KEY,
+    lift_id integer REFERENCES lifts(id) NOT NULL,
+    reps decimal NOT NULL
 );
 
 CREATE TABLE weighins (

@@ -1,0 +1,28 @@
+package views
+
+templ Login() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>Login</title>
+		</head>
+		<body>
+			<form>
+				<label>
+					Username
+					<input id="username" name="username" type="text"/>
+				</label>
+				<label>
+					Password
+					<input id="password" name="password" type="password"/>
+				</label>
+				<button type="submit" hx-post="/login" hx-target="#error">Log in</button>
+				<button type="submit" hx-post="/register" hx-target="#error">Register</button>
+			</form>
+			<div id="error"></div>
+		</body>
+	</html>
+}
