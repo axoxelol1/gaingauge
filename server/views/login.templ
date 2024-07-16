@@ -1,28 +1,136 @@
 package views
 
 templ Login() {
-	<!DOCTYPE html>
-	<html lang="en">
-		<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
-		<head>
-			<meta charset="utf-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1"/>
-			<title>Login</title>
-		</head>
-		<body>
-			<form>
-				<label>
-					Username
-					<input id="username" name="username" type="text"/>
-				</label>
-				<label>
-					Password
-					<input id="password" name="password" type="password"/>
-				</label>
-				<button type="submit" hx-post="/login" hx-target="#error">Log in</button>
-				<button type="submit" hx-post="/register" hx-target="#error">Register</button>
-			</form>
-			<div id="error"></div>
-		</body>
-	</html>
+<!DOCTYPE html>
+<html lang="en">
+<script src="https://unpkg.com/htmx.org@2.0.1"
+    integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/"
+    crossorigin="anonymous"></script>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login</title>
+</head>
+
+<body>
+    @LoginForm()
+</body>
+<style>
+    :root {
+        --primary: #FFFFFF;
+        --accent: #00b8ff;
+        --dark-text: #000000;
+        --light-text: #FFFFFF;
+        font-family: sans-serif;
+        font-optical-sizing: auto;
+        font-style: normal;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-content: center;
+    }
+
+    button {
+        background-color: var(--accent);
+        padding: 1rem;
+        border-radius: 10px;
+        transition-duration: 0.2s;
+    }
+
+    input {
+        width: 20em
+    }
+
+    button:hover {
+        box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    form {
+        background-color: --white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 2rem;
+        gap: 5px;
+        padding: 1rem;
+        border: 1px solid rgba(0, 0, 0, 0.19);
+        width: 500px;
+    }
+
+    #button-wrapper {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #inputs {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+    }
+</style>
+
+</html>
+}
+
+templ LoginForm() {
+<form id="form">
+    <div id="inputs">
+        <div class="labeltext">
+            <label for="username">
+                Username
+            </label>
+            <input id="username" name="username" type="text" />
+        </div>
+        <div class="labeltext">
+            <label for="password">
+                Password
+            </label>
+            <input id="password" name="password" type="password" />
+        </div>
+    </div>
+    <div id="button-wrapper">
+        <button type="submit" hx-post="/login" hx-target="#loginerror">Log in</button>
+        <button type="button" hx-get="/register" hx-target="#form" hx-swap="outerHTML">Sign up instead</button>
+    </div>
+    <div id="loginerror"></div>
+</form>
+}
+
+templ RegisterForm() {
+<form id="form">
+    <div id="inputs">
+        <div class="labeltext">
+            <label for="username">
+                Username
+            </label>
+            <input id="username" name="username" type="text" />
+        </div>
+        <div class="labeltext">
+            <label for="password">
+                Password
+            </label>
+            <input id="password" name="password" type="password" />
+        </div>
+        <div class="labeltext">
+            <label for="firstname">
+                First name
+            </label>
+            <input id="firstname" name="firstname" type="text" />
+        </div>
+        <div class="labeltext">
+            <label for="lastname">
+                Last name
+            </label>
+            <input id="lastname" name="lastname" type="text" />
+        </div>
+    </div>
+    <div id="button-wrapper">
+        <button type="submit" hx-post="/register" hx-target="#registererror">Register</button>
+        <button type="button" hx-get="/login" hx-target="#form" hx-swap="outerHTML">Already have an account?</button>
+    </div>
+    <div id="registererror"></div>
+</form>
 }

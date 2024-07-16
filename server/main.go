@@ -3,6 +3,8 @@ package main
 import (
 	"axox/gaingauge/views"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"os"
@@ -20,14 +22,6 @@ type Env struct {
 	db *pgxpool.Pool
 }
 
-type User struct {
-	Id        int64  `json:"id"`
-	UserName  string `json:"username"`
-	FirstName string `json:"firstName"`
-	LastName  string `json:"lastName"`
-	password  string
-}
-
 func main() {
 	godotenv.Load()
 
@@ -43,13 +37,14 @@ func main() {
 	router := chi.NewRouter()
 	router.Get("/favicon.ico", faviconHandler)
 	router.Post("/register", env.registerHandler)
+	router.Get("/register", templ.Handler(views.RegisterForm()).ServeHTTP)
+	router.Get("/login", templ.Handler(views.LoginForm()).ServeHTTP)
 	router.Post("/login", env.loginHandler)
 
 	router.Group(func(r chi.Router) {
 		r.Use(middleware.Logger)
 		r.Use(env.authentication)
 		r.Get("/", indexHandler)
-		// router.Get("/api", env.GetUsers)
 	})
 	http.ListenAndServe(":3000", router)
 }
@@ -90,21 +85,77 @@ func (env Env) authentication(next http.Handler) http.Handler {
 }
 
 func (env Env) registerHandler(w http.ResponseWriter, r *http.Request) {
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+	firstName := r.FormValue("firstname")
+	lastName := r.FormValue("lastname")
 
+	if username == "" {
+		w.Write([]byte(`Please provide a nonempty username`))
+		return
+	}
+
+	if password == "" {
+		w.Write([]byte(`Please provide a nonempty password`))
+		return
+	}
+
+	var count int64
+	err := env.db.QueryRow(context.Background(), "select count(*) from users where username = $1", username).Scan(&count)
+	if err != nil {
+		w.Write([]byte(`Failed to register`))
+		return
+	}
+	if count != 0 {
+		w.Write([]byte(`Username already taken`))
+		return
+	}
+
+	h := sha256.New()
+	h.Write([]byte(password))
+	hash := hex.EncodeToString(h.Sum(nil))
+	var userId int64
+
+	err = env.db.QueryRow(context.Background(), `insert into users ("username", "first_name", "last_name", "password") VALUES ($1, $2, $3, $4) returning id`, username, firstName, lastName, hash).Scan(&userId)
+	if err != nil {
+		w.Write([]byte(`Failed to register`))
+		return
+	}
+	expiresAt := time.Now().Add(8 * time.Hour)
+	var sessionId string
+	err = env.db.QueryRow(context.Background(), "insert into loginsessions (\"user_id\", \"expires_at\") values ($1, $2) RETURNING id;", userId, expiresAt).Scan(&sessionId)
+	if err != nil {
+		w.Write([]byte(`Failed to login`))
+		return
+	}
+	w.Header().Add("HX-Refresh", "true")
+	cookie := &http.Cookie{
+		Name:    "session_token",
+		Value:   sessionId,
+		Expires: expiresAt,
+	}
+	http.SetCookie(w, cookie)
 }
 
 func (env Env) loginHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+	h := sha256.New()
+
+	h.Write([]byte(password))
+
+	hash := hex.EncodeToString(h.Sum(nil))
+
 	var userId int64
-	err := env.db.QueryRow(context.Background(), "select id from users where username = $1 and password = $2", username, password).Scan(&userId)
+	err := env.db.QueryRow(context.Background(), "select id from users where username = $1 and password = $2", username, hash).Scan(&userId)
 	if err != nil {
 		w.Write([]byte(`Failed to log in`))
+		return
 	}
 	w.Header().Add("HX-Refresh", "true")
-	expiresAt := time.Now().Add(2 * time.Minute)
+	expiresAt := time.Now().Add(8 * time.Hour)
 	var sessionId string
-	err = env.db.QueryRow(context.Background(), "insert into loginsessions (\"user_id\", \"expires_at\") values (1, $1) RETURNING id;", expiresAt).Scan(&sessionId)
+	err = env.db.QueryRow(context.Background(), "insert into loginsessions (\"user_id\", \"expires_at\") values ($1, $2) RETURNING id;", userId, expiresAt).Scan(&sessionId)
 	cookie := &http.Cookie{
 		Name:    "session_token",
 		Value:   sessionId,
