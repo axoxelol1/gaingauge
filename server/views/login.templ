@@ -1,157 +1,145 @@
 package views
 
+import "axox/gaingauge/views/styles"
+
 templ Login() {
-<!DOCTYPE html>
-<html lang="en">
-<script src="https://unpkg.com/htmx.org@2.0.1"
-    integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/"
-    crossorigin="anonymous"></script>
+	<!DOCTYPE html>
+	<html lang="en">
+		<script src="https://unpkg.com/htmx.org@2.0.1" integrity="sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/" crossorigin="anonymous"></script>
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1"/>
+			<title>Login</title>
+			<style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-content: center;
+        }
 
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Login</title>
-</head>
+        input {
+            border-radius: 5px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 0.5rem;
+        }
 
-<body>
-    @LoginForm()
-</body>
-<style>
-    :root {
-        --primary: #FFFFFF;
-        --accent: #007dff;
-        --dark-text: #000000;
-        --light-text: #FFFFFF;
-        font-family: sans-serif;
-        font-optical-sizing: auto;
-        font-style: normal;
-    }
+        button {
+            border-style: none;
+            border-radius: 5px;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            padding: 1rem;
+            transition-duration: 0.2s;
+            box-shadow: none;
+            background-color: var(--accent);
+            color: var(--light-text);
+            font-family: sans-serif;
+            font-optical-sizing: auto;
+            font-style: normal;
+            font-size: 1rem;
+        }
 
-    body {
-        display: flex;
-        justify-content: center;
-        align-content: center;
-    }
-
-    input {
-        border-radius: 5px;
-        border-style: solid;
-        border-width: 1px;
-        padding: 0.5rem;
-    }
-
-    button {
-        border-style: none;
-        border-radius: 5px;
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        padding: 1rem;
-        transition-duration: 0.2s;
-        box-shadow: none;
-        background-color: var(--accent);
-        color: var(--light-text);
-        font-family: sans-serif;
-        font-optical-sizing: auto;
-        font-style: normal;
-        font-size: 1rem;
-    }
-
-    button:hover {
-        cursor: pointer;
-        filter: brightness(90%);
-    }
+        button:hover {
+            cursor: pointer;
+            filter: brightness(90%);
+        }
 
 
-    form {
-        background-color: --white;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        margin-top: 2rem;
-        row-gap: 10px;
-        padding: 1rem;
-        border: 1px solid rgba(0, 0, 0, 0.19);
-        width: min(400px, 80%);
-    }
+        form {
+            background-color: --white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-top: 2rem;
+            row-gap: 10px;
+            padding: 1rem;
+            border: 1px solid rgba(0, 0, 0, 0.19);
+            width: min(400px, 80%);
+        }
 
-    #button-wrapper {
-        display: flex;
-        flex-direction: row;
-        column-gap: 5px;
-    }
+        #button-wrapper {
+            display: flex;
+            flex-direction: row;
+            column-gap: 5px;
+        }
 
-    #inputs {
-        display: flex;
-        flex-direction: column;
-        row-gap: 10px;
-    }
+        #inputs {
+            display: flex;
+            flex-direction: column;
+            row-gap: 10px;
+        }
 
-    .labeltext {
-        display: flex;
-        flex-direction: column;
-    }
+        .labeltext {
+            display: flex;
+            flex-direction: column;
+        }
 
-    a {
-        color: var(--accent);
-        cursor: pointer;
-    }
-</style>
-
-</html>
+        a {
+            color: var(--accent);
+            cursor: pointer;
+        }
+    </style>
+			@styles.RootStyling()
+		</head>
+		<body>
+			@LoginForm()
+		</body>
+	</html>
 }
 
 templ LoginForm() {
-<form id="form">
-    <div id="inputs">
-        <div class="labeltext">
-            <label for="username">
-                Username
-            </label>
-            <input id="username" name="username" type="text" placeholder="Username" />
-        </div>
-        <div class="labeltext">
-            <label for="password">
-                Password
-            </label>
-            <input id="password" name="password" type="password" placeholder="Password" />
-        </div>
-    </div>
-    <button type="submit" hx-post="/login" hx-target="#loginerror">Log in</button>
-    <span>Don't have an account? <a hx-get="/register" hx-target="#form" hx-swap="outerHTML">Sign up instead</a></span>
-    <div id="loginerror"></div>
-</form>
+	<form id="form">
+		<div id="inputs">
+			<div class="labeltext">
+				<label for="username">
+					Username
+				</label>
+				<input id="username" name="username" type="text" placeholder="Username"/>
+			</div>
+			<div class="labeltext">
+				<label for="password">
+					Password
+				</label>
+				<input id="password" name="password" type="password" placeholder="Password"/>
+			</div>
+		</div>
+		<button type="submit" hx-post="/login" hx-target="#loginerror">Log in</button>
+		<span>Don't have an account? <a hx-get="/register" hx-target="#form" hx-swap="outerHTML">Sign up instead</a></span>
+		<div id="loginerror"></div>
+	</form>
 }
 
 templ RegisterForm() {
-<form id="form">
-    <div id="inputs">
-        <div class="labeltext">
-            <label for="username">
-                Username
-            </label>
-            <input id="username" name="username" type="text" placeholder="Username" />
-        </div>
-        <div class="labeltext">
-            <label for="password">
-                Password
-            </label>
-            <input id="password" name="password" type="password" placeholder="Password" />
-        </div>
-        <div class="labeltext">
-            <label for="firstname">
-                First name
-            </label>
-            <input id="firstname" name="firstname" type="text" placeholder="Fist name" />
-        </div>
-        <div class="labeltext">
-            <label for="lastname">
-                Last name
-            </label>
-            <input id="lastname" name="lastname" type="text" placeholder="Last name" />
-        </div>
-    </div>
-    <button type="submit" hx-post="/register" hx-target="#registererror">Register</button>
-    <span>Already have an account? <a hx-get="/login" hx-target="#form" hx-swap="outerHTML">Log in instead</a></span>
-    <div id="registererror"></div>
-</form>
+	<form id="form">
+		<div id="inputs">
+			<div class="labeltext">
+				<label for="username">
+					Username
+				</label>
+				<input id="username" name="username" type="text" placeholder="Username"/>
+			</div>
+			<div class="labeltext">
+				<label for="password">
+					Password
+				</label>
+				<input id="password" name="password" type="password" placeholder="Password"/>
+			</div>
+			<div class="labeltext">
+				<label for="firstname">
+					First name
+				</label>
+				<input id="firstname" name="firstname" type="text" placeholder="Fist name"/>
+			</div>
+			<div class="labeltext">
+				<label for="lastname">
+					Last name
+				</label>
+				<input id="lastname" name="lastname" type="text" placeholder="Last name"/>
+			</div>
+		</div>
+		<button type="submit" hx-post="/register" hx-target="#registererror">Register</button>
+		<span>Already have an account? <a hx-get="/login" hx-target="#form" hx-swap="outerHTML">Log in instead</a></span>
+		<div id="registererror"></div>
+	</form>
 }

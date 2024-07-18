@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/a-h/templ"
@@ -35,6 +34,7 @@ func main() {
 	env := &Env{db: conn}
 
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
 	router.Get("/favicon.ico", faviconHandler)
 	router.Post("/register", env.registerHandler)
 	router.Get("/register", templ.Handler(views.RegisterForm()).ServeHTTP)
@@ -42,16 +42,11 @@ func main() {
 	router.Post("/login", env.loginHandler)
 
 	router.Group(func(r chi.Router) {
-		r.Use(middleware.Logger)
 		r.Use(env.authentication)
-		r.Get("/", indexHandler)
+		r.Get("/", templ.Handler(views.Index()).ServeHTTP)
+		r.Get("/log", templ.Handler(views.Log()).ServeHTTP)
 	})
 	http.ListenAndServe(":3000", router)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request) {
-	userId := r.Context().Value("userId").(int64)
-	templ.Handler(views.Index(strconv.FormatInt(userId, 10))).ServeHTTP(w, r)
 }
 
 func (env Env) authentication(next http.Handler) http.Handler {

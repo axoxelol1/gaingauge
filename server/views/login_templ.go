@@ -8,6 +8,8 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+import "axox/gaingauge/views/styles"
+
 func Login() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -26,7 +28,15 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><script src=\"https://unpkg.com/htmx.org@2.0.1\" integrity=\"sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/\" crossorigin=\"anonymous\"></script><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Login</title></head><body>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><script src=\"https://unpkg.com/htmx.org@2.0.1\" integrity=\"sha384-QWGpdj554B4ETpJJC9z+ZHJcA/i59TyjxEPXiiUgN2WmTyV5OEZWCD6gQhgkdpB/\" crossorigin=\"anonymous\"></script><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Login</title><style>\n        body {\n            display: flex;\n            justify-content: center;\n            align-content: center;\n        }\n\n        input {\n            border-radius: 5px;\n            border-style: solid;\n            border-width: 1px;\n            padding: 0.5rem;\n        }\n\n        button {\n            border-style: none;\n            border-radius: 5px;\n            padding-top: 0.5rem;\n            padding-bottom: 0.5rem;\n            padding: 1rem;\n            transition-duration: 0.2s;\n            box-shadow: none;\n            background-color: var(--accent);\n            color: var(--light-text);\n            font-family: sans-serif;\n            font-optical-sizing: auto;\n            font-style: normal;\n            font-size: 1rem;\n        }\n\n        button:hover {\n            cursor: pointer;\n            filter: brightness(90%);\n        }\n\n\n        form {\n            background-color: --white;\n            display: flex;\n            flex-direction: column;\n            justify-content: center;\n            margin-top: 2rem;\n            row-gap: 10px;\n            padding: 1rem;\n            border: 1px solid rgba(0, 0, 0, 0.19);\n            width: min(400px, 80%);\n        }\n\n        #button-wrapper {\n            display: flex;\n            flex-direction: row;\n            column-gap: 5px;\n        }\n\n        #inputs {\n            display: flex;\n            flex-direction: column;\n            row-gap: 10px;\n        }\n\n        .labeltext {\n            display: flex;\n            flex-direction: column;\n        }\n\n        a {\n            color: var(--accent);\n            cursor: pointer;\n        }\n    </style>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = styles.RootStyling().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</head><body>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +44,7 @@ func Login() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</body><style>\n    :root {\n        --primary: #FFFFFF;\n        --accent: #007dff;\n        --dark-text: #000000;\n        --light-text: #FFFFFF;\n        font-family: sans-serif;\n        font-optical-sizing: auto;\n        font-style: normal;\n    }\n\n    body {\n        display: flex;\n        justify-content: center;\n        align-content: center;\n    }\n\n    input {\n        border-radius: 5px;\n        border-style: solid;\n        border-width: 1px;\n        padding: 0.5rem;\n    }\n\n    button {\n        border-style: none;\n        border-radius: 5px;\n        padding-top: 0.5rem;\n        padding-bottom: 0.5rem;\n        padding: 1rem;\n        transition-duration: 0.2s;\n        box-shadow: none;\n        background-color: var(--accent);\n        color: var(--light-text);\n        font-family: sans-serif;\n        font-optical-sizing: auto;\n        font-style: normal;\n        font-size: 1rem;\n    }\n\n    button:hover {\n        cursor: pointer;\n        filter: brightness(90%);\n    }\n\n\n    form {\n        background-color: --white;\n        display: flex;\n        flex-direction: column;\n        justify-content: center;\n        margin-top: 2rem;\n        row-gap: 10px;\n        padding: 1rem;\n        border: 1px solid rgba(0, 0, 0, 0.19);\n        width: min(400px, 80%);\n    }\n\n    #button-wrapper {\n        display: flex;\n        flex-direction: row;\n        column-gap: 5px;\n    }\n\n    #inputs {\n        display: flex;\n        flex-direction: column;\n        row-gap: 10px;\n    }\n\n    .labeltext {\n        display: flex;\n        flex-direction: column;\n    }\n\n    a {\n        color: var(--accent);\n        cursor: pointer;\n    }\n</style></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
