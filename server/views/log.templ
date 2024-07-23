@@ -2,10 +2,18 @@ package views
 
 import "axox/gaingauge/views/components"
 
-templ Log() {
-	@components.PageWrapper() {
-		<div> select workout or create new </div>
-        <div> select exercise </div>
-        <div> show sets with abillity to edit and add </div>
-	}
+templ logContent() {
+<div>select workout or create new </div>
+<div>select exercise </div>
+<div>show sets with abillity to edit and add </div>
+}
+
+templ Log(isHtmxReq bool) {
+if isHtmxReq {
+@logContent()
+} else {
+@components.PageWrapper() {
+@logContent()
+}
+}
 }

@@ -35,7 +35,8 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Get("/favicon.ico", faviconHandler)
+	router.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./resources/favicon.ico") })
+	router.Get("/index.css", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./views/index.css") })
 	router.Post("/register", env.registerHandler)
 	router.Get("/register", templ.Handler(views.RegisterForm()).ServeHTTP)
 	router.Get("/login", templ.Handler(views.LoginForm()).ServeHTTP)
@@ -43,10 +44,22 @@ func main() {
 
 	router.Group(func(r chi.Router) {
 		r.Use(env.authentication)
-		r.Get("/", templ.Handler(views.Index()).ServeHTTP)
-		r.Get("/log", templ.Handler(views.Log()).ServeHTTP)
+		r.Get("/", indexHandler)
+		r.Get("/log", logHandler)
 	})
 	http.ListenAndServe(":3000", router)
+}
+
+func indexHandler(w http.ResponseWriter, r *http.Request) {
+	isHtmxReq := r.Header.Get("HX-Request") == "true"
+	w.Header().Add("Vary", "HX-Request")
+	templ.Handler(views.Index(isHtmxReq)).ServeHTTP(w, r)
+}
+
+func logHandler(w http.ResponseWriter, r *http.Request) {
+	isHtmxReq := r.Header.Get("HX-Request") == "true"
+	w.Header().Add("Vary", "HX-Request")
+	templ.Handler(views.Log(isHtmxReq)).ServeHTTP(w, r)
 }
 
 func (env Env) authentication(next http.Handler) http.Handler {
@@ -157,8 +170,4 @@ func (env Env) loginHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: expiresAt,
 	}
 	http.SetCookie(w, cookie)
-}
-
-func faviconHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "./resources/favicon.ico")
 }
