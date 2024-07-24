@@ -45,7 +45,7 @@ func main() {
 	router.Group(func(r chi.Router) {
 		r.Use(env.authentication)
 		r.Get("/", indexHandler)
-		r.Get("/log", logHandler)
+		r.Get("/log", env.logHandler)
 	})
 	http.ListenAndServe(":3000", router)
 }
@@ -56,10 +56,35 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	templ.Handler(views.Index(isHtmxReq)).ServeHTTP(w, r)
 }
 
-func logHandler(w http.ResponseWriter, r *http.Request) {
+func (env Env) logHandler(w http.ResponseWriter, r *http.Request) {
 	isHtmxReq := r.Header.Get("HX-Request") == "true"
 	w.Header().Add("Vary", "HX-Request")
-	templ.Handler(views.Log(isHtmxReq)).ServeHTTP(w, r)
+	id, ok := r.Context().Value("userId").(int64)
+	if !ok {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	rows, err := env.db.Query(context.Background(), "select date from workouts where user_id = $1", id)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var dates []time.Time
+	for rows.Next() {
+		var date time.Time
+		err := rows.Scan(&date)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		dates = append(dates, date)
+	}
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	templ.Handler(views.Log(isHtmxReq, dates)).ServeHTTP(w, r)
 }
 
 func (env Env) authentication(next http.Handler) http.Handler {

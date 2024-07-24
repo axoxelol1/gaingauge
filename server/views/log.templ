@@ -1,19 +1,47 @@
 package views
 
-import "axox/gaingauge/views/components"
+import (
+"axox/gaingauge/views/components"
+"time"
+)
 
-templ logContent() {
-<div>select workout or create new </div>
-<div>select exercise </div>
-<div>show sets with abillity to edit and add </div>
+templ workOutSelection(workoutDates []time.Time) {
+<div x-data="{open: false}">
+    <div class="modal" x-show="open" x-transition.opacity.duration.500ms>
+        <div class="modal-content" @click.outside="open = false">
+            <button @click="open = false">Close</button>
+        </div>
+    </div>
+    <div style="display: flex;">
+        <select style="width: 20em">
+            for _, item := range workoutDates {
+            <option value={ item.String() }>{ item.String() }</option>
+            }
+        </select>
+        <button style="padding: 0.5em" @click="open = true">
+            Add new workout
+        </button>
+    </div>
+</div>
 }
 
-templ Log(isHtmxReq bool) {
+templ logContent(workoutDates []time.Time) {
+<div style="display: flex; align-items: center; flex-direction: column;">
+    @workOutSelection(workoutDates)
+    <ol>
+        <li>select workout or create new </li>
+        <li>select exercise </li>
+        <li>show sets with abillity to edit and add </li>
+    </ol>
+</div>
+}
+
+templ Log(isHtmxReq bool, workoutDates []time.Time) {
 if isHtmxReq {
-@logContent()
+@logContent(workoutDates)
 } else {
 @components.PageWrapper() {
-@logContent()
+@logContent(workoutDates)
 }
 }
 }
