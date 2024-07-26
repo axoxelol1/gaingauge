@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func workOutSelection(workoutDates []time.Time) templ.Component {
+func WorkOutSelection(workoutDates []time.Time) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -31,7 +31,7 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div x-data=\"{open: false}\"><div class=\"modal\" x-show=\"open\" x-transition.opacity.duration.500ms><div class=\"modal-content\" @click.outside=\"open = false\"><button @click=\"open = false\">Close</button></div></div><div style=\"display: flex;\"><select style=\"width: 20em\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div x-data=\"{open: false}\"><div class=\"modal\" x-show=\"open\" x-transition.opacity.duration.250ms><div class=\"modal-content\" @click.outside=\"open = false\"><form style=\"display: flex; flex-direction: column; gap: 1em;\" hx-post=\"/createWorkout\" hx-target=\"#workout-select\" hx-swap=\"afterbegin\"><div class=\"labeltext\"><label for=\"date\">Date </label> <input id=\"date\" name=\"date\" type=\"datetime-local\"></div><button type=\"submit\">Create</button> <span id=\"create-workout-error\"></span> <button type=\"button\" @click=\"open = false\">Close</button></form></div></div><div style=\"display: flex;\"><select style=\"width: 20em\" id=\"workout-select\" name=\"date\" autocomplete=\"off\" hx-get=\"/workoutEditor\" hx-target=\"#workout-editor\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -41,9 +41,9 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(item.String())
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(item.Format("2006-01-02T15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 18, Col: 41}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 38, Col: 52}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -54,9 +54,9 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(item.String())
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(item.Format("2006-01-02 15:04"))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 18, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 38, Col: 88}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -97,11 +97,11 @@ func logContent(workoutDates []time.Time) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = workOutSelection(workoutDates).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = WorkOutSelection(workoutDates).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<ol><li>select workout or create new </li><li>select exercise </li><li>show sets with abillity to edit and add </li></ol></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"workout-editor\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -1,4 +1,4 @@
-CREATE TABLE users (
+Cuser_idREATE TABLE users (
     id serial PRIMARY KEY,
     username text NOT NULL UNIQUE,
     first_name text NOT NULL,
@@ -13,7 +13,9 @@ CREATE TABLE loginsessions (
 );
 
 CREATE TABLE exercises (
-    name text PRIMARY KEY
+    name text NOT NULL,
+    user_id integer REFERENCES users(id) NOT NULL,
+    PRIMARY Key (name, user_id)
 );
 
 CREATE TABLE workouts (
@@ -26,14 +28,16 @@ CREATE TABLE workouts (
 CREATE TABLE lifts (
     id serial PRIMARY KEY,
     workout integer REFERENCES workouts(id) NOT NULL,
-    exercise text REFERENCES exercises(name) NOT NULL,
+    exercise text REFERENCES exercises(name, user_id) NOT NULL,
     comment text
 );
 
-CREATE  TABLE sets (
+CREATE TABLE sets (
     id serial PRIMARY KEY,
     lift_id integer REFERENCES lifts(id) NOT NULL,
-    reps decimal NOT NULL
+    setnr integer NOT NULL,
+    reps decimal NOT NULL,
+    wieght decimal NOT NULL
 );
 
 CREATE TABLE weighins (

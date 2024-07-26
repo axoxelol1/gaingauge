@@ -36,6 +36,7 @@ func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Get("/favicon.ico", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./resources/favicon.ico") })
+	router.Get("/spinner.svg", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./resources/spinner.svg") })
 	router.Get("/index.css", func(w http.ResponseWriter, r *http.Request) { http.ServeFile(w, r, "./views/index.css") })
 	router.Post("/register", env.registerHandler)
 	router.Get("/register", templ.Handler(views.RegisterForm()).ServeHTTP)
@@ -46,6 +47,8 @@ func main() {
 		r.Use(env.authentication)
 		r.Get("/", indexHandler)
 		r.Get("/log", env.logHandler)
+		r.Post("/createWorkout", env.createWorkout)
+		r.Get("/workoutEditor", env.workoutEditor)
 	})
 	http.ListenAndServe(":3000", router)
 }
@@ -64,7 +67,7 @@ func (env Env) logHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
-	rows, err := env.db.Query(context.Background(), "select date from workouts where user_id = $1", id)
+	rows, err := env.db.Query(context.Background(), "select date from workouts where user_id = $1 order by date desc", id)
 	if err != nil {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
@@ -168,6 +171,36 @@ func (env Env) registerHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: expiresAt,
 	}
 	http.SetCookie(w, cookie)
+}
+
+func (env Env) createWorkout(w http.ResponseWriter, r *http.Request) {
+	date, err := time.Parse("2006-01-02T15:04", r.FormValue("date"))
+	if err != nil {
+		w.Header().Add("HX-Retarget", "#create-workout-error")
+		w.Header().Add("HX-Reswap", "innerHTML")
+		w.Write([]byte(`Invalid date format error`))
+		return
+	}
+
+	id, ok := r.Context().Value("userId").(int64)
+	if !ok {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	_, err = env.db.Exec(context.Background(), `insert into workouts ("user_id", "date") values ($1, $2)`, id, date)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(fmt.Sprintf(`<option value="%s" selected> %s </option>`, date.Format("2006-01-02T15:04"), date.Format("2006-01-02 15:04"))))
+}
+
+func (env Env) workoutEditor(w http.ResponseWriter, r *http.Request) {
+	date, err := time.Parse("2006-01-02T15:04", r.URL.Query().Get("date"))
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+	}
+	w.Write([]byte(date.String()))
 }
 
 func (env Env) loginHandler(w http.ResponseWriter, r *http.Request) {
