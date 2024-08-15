@@ -47,8 +47,11 @@ func main() {
 		r.Use(env.authentication)
 		r.Get("/", indexHandler)
 		r.Get("/log", env.logHandler)
+		r.Get("/exercises", env.exercisesHandler)
 		r.Post("/createWorkout", env.createWorkout)
+		r.Post("/createExercise", env.createExercise)
 		r.Get("/workoutEditor", env.workoutEditor)
+		r.Get("/exerciseOverview", env.exerciseOverview)
 	})
 	http.ListenAndServe(":3000", router)
 }
@@ -57,6 +60,37 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 	isHtmxReq := r.Header.Get("HX-Request") == "true"
 	w.Header().Add("Vary", "HX-Request")
 	templ.Handler(views.Index(isHtmxReq)).ServeHTTP(w, r)
+}
+
+func (env Env) exercisesHandler(w http.ResponseWriter, r *http.Request) {
+	isHtmxReq := r.Header.Get("HX-Request") == "true"
+	w.Header().Add("Vary", "HX-Request")
+	id, ok := r.Context().Value("userId").(int64)
+	if !ok {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	rows, err := env.db.Query(context.Background(), "select name from exercises where user_id = $1 order by name asc", id)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	var exercises []string
+	for rows.Next() {
+		var exercise string
+		err := rows.Scan(&exercise)
+		if err != nil {
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			return
+		}
+		exercises = append(exercises, exercise)
+	}
+	if err := rows.Err(); err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	templ.Handler(views.Exercises(isHtmxReq, exercises)).ServeHTTP(w, r)
 }
 
 func (env Env) logHandler(w http.ResponseWriter, r *http.Request) {
@@ -92,9 +126,13 @@ func (env Env) logHandler(w http.ResponseWriter, r *http.Request) {
 
 func (env Env) authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		isHtmxReq := r.Header.Get("HX-Request") == "true"
 		c, err := r.Cookie("session_token")
 		if err != nil {
+			if isHtmxReq {
+				w.Header().Add("HX-Refresh", "true")
+				return
+			}
 			templ.Handler(views.Login()).ServeHTTP(w, r)
 			return
 		}
@@ -105,11 +143,19 @@ func (env Env) authentication(next http.Handler) http.Handler {
 		err = env.db.QueryRow(context.Background(), "select user_id, expires_at from loginsessions where id=$1 and now() < expires_at", sessionToken).Scan(&userId, &expiresAt)
 
 		if err != nil {
+			if isHtmxReq {
+				w.Header().Add("HX-Refresh", "true")
+				return
+			}
 			templ.Handler(views.Login()).ServeHTTP(w, r)
 			return
 		}
 
 		if expiresAt.Before(time.Now()) {
+			if isHtmxReq {
+				w.Header().Add("HX-Refresh", "true")
+				return
+			}
 			templ.Handler(views.Login()).ServeHTTP(w, r)
 			return
 		}
@@ -192,7 +238,36 @@ func (env Env) createWorkout(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Internal server error", http.StatusInternalServerError)
 		return
 	}
+	w.Header().Add("HX-Trigger", "new-workout")
 	w.Write([]byte(fmt.Sprintf(`<option value="%s" selected> %s </option>`, date.Format("2006-01-02T15:04"), date.Format("2006-01-02 15:04"))))
+}
+
+func (env Env) createExercise(w http.ResponseWriter, r *http.Request) {
+	exercise := r.FormValue("exercise")
+	if exercise == "" {
+		w.Header().Add("HX-Retarget", "#create-exercise-error")
+		w.Header().Add("HX-Reswap", "innerHTML")
+		w.Write([]byte(`Please provide an exercise name`))
+		return
+	}
+
+	id, ok := r.Context().Value("userId").(int64)
+	if !ok {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	_, err := env.db.Exec(context.Background(), `insert into exercises ("user_id", "name") values ($1, $2)`, id, exercise)
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+	w.Header().Add("HX-Trigger", "new-exercise")
+	w.Write([]byte(fmt.Sprintf(`<option value="%s" selected> %s </option>`, exercise, exercise)))
+}
+
+func (env Env) exerciseOverview(w http.ResponseWriter, r *http.Request) {
+	exercise := r.FormValue("exercise")
+	w.Write([]byte(exercise))
 }
 
 func (env Env) workoutEditor(w http.ResponseWriter, r *http.Request) {

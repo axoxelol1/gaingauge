@@ -8,12 +8,9 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"axox/gaingauge/views/components"
-	"time"
-)
+import "axox/gaingauge/views/components"
 
-func workOutSelection(workoutDates []time.Time) templ.Component {
+func exerciseSelection(exercises []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -31,19 +28,19 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div x-data=\"{open: false}\"><div class=\"modal\" x-show=\"open\" x-transition.opacity.duration.250ms><div class=\"modal-content\" @click.outside=\"open = false\"><form style=\"display: flex; flex-direction: column; gap: 1em;\" hx-post=\"/createWorkout\" hx-target=\"#workout-select\" hx-swap=\"afterbegin\"><div class=\"labeltext\"><label for=\"date\">Date </label> <input id=\"date\" name=\"date\" type=\"datetime-local\"></div><span id=\"create-workout-error\"></span> <button type=\"submit\" @click=\"open = false\">Create</button> <button type=\"button\" @click=\"open = false\">Close</button></form></div></div><div style=\"display: flex;\"><select style=\"width: 20em\" id=\"workout-select\" name=\"date\" autocomplete=\"off\" hx-get=\"/workoutEditor\" hx-target=\"#workout-editor\" hx-trigger=\"change,load,new-workout from:body delay:0.1s\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div x-data=\"{open: false}\"><div class=\"modal\" x-show=\"open\" x-transition.opacity.duration.250ms><div class=\"modal-content\" @click.outside=\"open = false\"><form style=\"display: flex; flex-direction: column; gap: 1em;\" hx-post=\"/createExercise\" hx-target=\"#exercise-select\" hx-swap=\"afterbegin\"><div class=\"labeltext\"><label for=\"exercise\">Exercise </label> <input id=\"exercise\" name=\"exercise\" type=\"text\"></div><span id=\"create-exercise-error\"></span> <button type=\"submit\" @click=\"open = false\">Create</button> <button type=\"button\" @click=\"open = false\">Close</button></form></div></div><div style=\"display: flex;\"><select style=\"width: 20em\" id=\"exercise-select\" name=\"exercise\" autocomplete=\"off\" hx-get=\"/exerciseOverview\" hx-target=\"#exercise-overview\" hx-trigger=\"change,load,new-exercise from:body delay:0.1s\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, item := range workoutDates {
+		for _, exercise := range exercises {
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<option value=\"")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var2 string
-			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(item.Format("2006-01-02T15:04"))
+			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(exercise)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 39, Col: 52}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/exercises.templ`, Line: 36, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -54,9 +51,9 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 				return templ_7745c5c3_Err
 			}
 			var templ_7745c5c3_Var3 string
-			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(item.Format("2006-01-02 15:04"))
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(exercise)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/log.templ`, Line: 39, Col: 88}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/exercises.templ`, Line: 36, Col: 42}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 			if templ_7745c5c3_Err != nil {
@@ -67,7 +64,7 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> <button style=\"padding: 0.5em\" @click=\"open = true\">Add new workout</button></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select> <button style=\"padding: 0.5em\" @click=\"open = true\">Add new exercise</button></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -75,7 +72,7 @@ func workOutSelection(workoutDates []time.Time) templ.Component {
 	})
 }
 
-func logContent(workoutDates []time.Time) templ.Component {
+func exercisesContent(exercises []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -97,11 +94,11 @@ func logContent(workoutDates []time.Time) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = workOutSelection(workoutDates).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = exerciseSelection(exercises).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"workout-editor\"></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"exercise-overview\"></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -109,7 +106,7 @@ func logContent(workoutDates []time.Time) templ.Component {
 	})
 }
 
-func Log(isHtmxReq bool, workoutDates []time.Time) templ.Component {
+func Exercises(isHtmxReq bool, exercises []string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -128,7 +125,7 @@ func Log(isHtmxReq bool, workoutDates []time.Time) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isHtmxReq {
-			templ_7745c5c3_Err = logContent(workoutDates).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = exercisesContent(exercises).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -145,7 +142,7 @@ func Log(isHtmxReq bool, workoutDates []time.Time) templ.Component {
 					}()
 				}
 				ctx = templ.InitializeContext(ctx)
-				templ_7745c5c3_Err = logContent(workoutDates).Render(ctx, templ_7745c5c3_Buffer)
+				templ_7745c5c3_Err = exercisesContent(exercises).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}

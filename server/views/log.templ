@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-templ WorkOutSelection(workoutDates []time.Time) {
+templ workOutSelection(workoutDates []time.Time) {
 	<div x-data="{open: false}">
 		<div class="modal" x-show="open" x-transition.opacity.duration.250ms>
 			<div class="modal-content" @click.outside="open = false">
@@ -19,8 +19,8 @@ templ WorkOutSelection(workoutDates []time.Time) {
 						<label for="date">Date </label>
 						<input id="date" name="date" type="datetime-local"/>
 					</div>
-					<button type="submit">Create</button>
 					<span id="create-workout-error"></span>
+					<button type="submit" @click="open = false">Create</button>
 					<button type="button" @click="open = false">Close</button>
 				</form>
 			</div>
@@ -33,6 +33,7 @@ templ WorkOutSelection(workoutDates []time.Time) {
 				autocomplete="off"
 				hx-get="/workoutEditor"
 				hx-target="#workout-editor"
+                hx-trigger="change,load,new-workout from:body delay:0.1s"
 			>
 				for _, item := range workoutDates {
 					<option value={ item.Format("2006-01-02T15:04") }>{ item.Format("2006-01-02 15:04") }</option>
@@ -46,8 +47,8 @@ templ WorkOutSelection(workoutDates []time.Time) {
 }
 
 templ logContent(workoutDates []time.Time) {
-	<div style="display: flex; align-items: center; flex-direction: column;">
-		@WorkOutSelection(workoutDates)
+	<div style="display: flex; align-items: center; flex-direction: column; margin-top: 4px">
+		@workOutSelection(workoutDates)
 		<div id="workout-editor"></div>
 	</div>
 }
