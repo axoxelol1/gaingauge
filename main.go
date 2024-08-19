@@ -26,7 +26,7 @@ type Env struct {
 func main() {
 	godotenv.Load()
 
-	conn, err := sql.Open("sqlite3", "main.db")
+	conn, err := sql.Open("sqlite3", "main.db?_foreign_keys=on")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

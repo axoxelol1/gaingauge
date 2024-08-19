@@ -29,15 +29,15 @@ CREATE TABLE lifts (
     id INTEGER PRIMARY KEY,
     user_id integer REFERENCES users(id) NOT NULL,
     liftnr integer NOT NULL,
-    workout integer REFERENCES workouts(id) NOT NULL,
+    workout integer REFERENCES workouts(id) ON DELETE CASCADE NOT NULL,
     exercise text NOT NULL,
     comment text,
-    FOREIGN KEY (exercise, user_id) REFERENCES exercises(name, user_id)
+    FOREIGN KEY (exercise, user_id) REFERENCES exercises(name, user_id) ON UPDATE CASCADE
 );
 
 CREATE TABLE sets (
     id INTEGER PRIMARY KEY,
-    lift integer REFERENCES lifts(id) NOT NULL,
+    lift integer REFERENCES lifts(id) ON DELETE CASCADE NOT NULL,
     setnr integer NOT NULL,
     reps decimal NOT NULL,
     weight decimal NOT NULL
