@@ -33,6 +33,7 @@ CREATE TABLE lifts (
     exercise text NOT NULL,
     comment text,
     FOREIGN KEY (exercise, user_id) REFERENCES exercises(name, user_id) ON UPDATE CASCADE
+    FOREIGN KEY (workout, user_id) REFERENCES workouts(id, user_id)
 );
 
 CREATE TABLE sets (
